@@ -7,7 +7,7 @@ Created on 2015-05-26
 @author: Alexandre
 """
 
-from tkinter import Tk, Label, LabelFrame, Button
+from tkinter import Tk, Label, LabelFrame, Button, Widget
 from tkinter.constants import FALSE
 import os.path
 import requests
@@ -23,7 +23,7 @@ def createWindow(paddingX,paddingY):
     window = Tk()
     window.resizable(width=FALSE, height=FALSE)
     window.iconbitmap("Icon.ico")
-    window.title("Destiny Checklist")
+    window.title("Destiny Application")
     window.config(bg="#85A0D7")
     configureGrid(window,3,6,paddingX,paddingY)
     return window
@@ -34,14 +34,11 @@ def fillWindow(window,buttonsList):
     window: The window to fill
     buttonsList: The buttons to keep track of
     """
-    
     heroicLevels = getHeroicLevels()
-    
     # Fill each character
     fillCharacter(window,buttonsList,heroicLevels,0)
     fillCharacter(window,buttonsList,heroicLevels,1)
     fillCharacter(window,buttonsList,heroicLevels,2)
-    
     # Save button at the end
     addButton(window,buttonsList,1,21,["Save"],column=1,row=5)
     changeButtonCommand(getLastButton(buttonsList), \
@@ -182,10 +179,14 @@ def addButton(window,buttonsList,heightValue,widthValue,states,**options):
     states: The possible names of the button
     **options: Grid positioning options
     """
+    if not isinstance(window, Tk) and not isinstance(window, Widget):
+        raise TypeError('The window must be an instance of Tkinter')
+    if not len(states) > 0:
+        raise ValueError('The button must have at least one state')
     button = Button(window,font=("serif",8),
                     relief="flat",highlightbackground="#CCCCCC", \
                     height=heightValue,width=widthValue,text=states[0], \
-                    command=lambda:changeButtonState(button))
+                    command=lambda:changeButtonState(button,buttonsList))
     button.grid(options)
     buttonsList[0].append(button)
     length = len(buttonsList[0])
@@ -247,7 +248,7 @@ def configureGrid(frame,columns,rows,paddingX,paddingY):
             row += 1
         column += 1
         
-def changeButtonState(button):
+def changeButtonState(button,buttonsList):
     """ Changes the state of the button
     
     button: The button to modify
@@ -268,7 +269,8 @@ def save(button,buttonsList):
     button: The current save button
     buttonsList: A list of all the buttons
     """
-    file = open(getConfigPath(),"w")
+    os.makedirs(getConfigPath(), exist_ok=True)
+    file = open(getConfigPath()+"values.cfg","w")
     length = len(buttonsList[0])
     index = 0
     while index < length - 1:
@@ -283,8 +285,8 @@ def load(buttonsList):
     
     buttonsList: the list of buttons to fill
     """
-    if os.path.isfile(getConfigPath()):
-        file = open(getConfigPath(),"r")
+    if os.path.isfile(getConfigPath()+"values.cfg"):
+        file = open(getConfigPath()+"values.cfg","r")
         for line in file:
             values = line.split(':')
             buttonsList[1].append(values[0])
@@ -309,7 +311,7 @@ def getHeroicLevels():
 
 def getConfigPath():
     """ Returns the path of the configuration file """
-    return os.path.expanduser('~/DestinyChecklist.cfg')
+    return os.path.expanduser('~/DestinyChecklist/')
 
 def getDefaultBackground():
     """ Returns the default button color """
@@ -322,9 +324,3 @@ def getStartedBackground():
 def getCompletedBackground():
     """ Returns the completed button color """
     return "#00FF00"
-
-window = createWindow(25, 25)
-buttonsList = [[],[],[]]
-load(buttonsList)
-fillWindow(window,buttonsList)
-window.mainloop()
