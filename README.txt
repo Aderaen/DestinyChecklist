@@ -30,5 +30,5 @@ Green = Completly done
 (H) = Hard Difficulty
 
 
-Note : the program should save your actual state into "~/documents/DestinyChecklist.cfg" 
+Note : the program should save your actual state into "~/DestinyChecklist/values.cfg"
 if you hit the save button and will load on launch.
