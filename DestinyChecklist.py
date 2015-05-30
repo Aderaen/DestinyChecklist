@@ -297,7 +297,10 @@ def load(buttonsList):
             buttonsList[2].append(int(values[1]))
             
 def getHeroicLevels():
-    """ Returns the weekly activity levels from Bungie """
+    """ Returns the weekly activity levels from Bungie
+    
+        Inspired by dinklebot.net : https://github.com/BinarMorker/Dinklebot
+     """
     url = "https://www.bungie.net/platform/destiny/advisors/?definitions=true"
     request = requests.get(url, \
               headers={'X-API-Key':'8147443ac3d64b238d680f89b912e285'})
