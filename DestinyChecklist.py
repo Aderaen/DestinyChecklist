@@ -22,7 +22,8 @@ def createWindow(paddingX,paddingY):
     """
     window = Tk()
     window.resizable(width=FALSE, height=FALSE)
-    window.iconbitmap("Icon.ico")
+    if os.name == "nt":
+        window.iconbitmap("Icon.ico")
     window.title("Destiny Application")
     window.config(bg="#85A0D7")
     configureGrid(window,3,6,paddingX,paddingY)
@@ -34,7 +35,10 @@ def fillWindow(window,buttonsList):
     window: The window to fill
     buttonsList: The buttons to keep track of
     """
-    heroicLevels = getHeroicLevels()
+    try:
+        heroicLevels = getHeroicLevels()
+    except:
+        heroicLevels = ["N","N","H"]
     # Fill each character
     fillCharacter(window,buttonsList,heroicLevels,0)
     fillCharacter(window,buttonsList,heroicLevels,1)
